@@ -3,7 +3,6 @@
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency, formatNumber, formatPercent, cn } from "@/lib/utils";
-import { DivideIcon as LucideIcon } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from "recharts";
@@ -19,7 +18,7 @@ export function MetricCard({ data, historicalData }: MetricCardProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   // Get the icon component from Lucide icons
-  const IconComponent = (LucideIcons as any)[data.icon] as LucideIcon;
+  const IconComponent = (LucideIcons as any)[data.icon] as typeof LucideIcons;
 
   const formatValue = (value: number) => {
     if (data.id === "revenue" || data.id === "aov") {
