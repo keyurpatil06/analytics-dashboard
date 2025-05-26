@@ -1,12 +1,12 @@
 "use client";
 
+import React, { useState } from "react";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import * as LucideIcons from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatCurrency, formatNumber, formatPercent, cn } from "@/lib/utils";
-import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from "recharts";
-import * as LucideIcons from "lucide-react";
+import { formatCurrency, formatNumber, formatPercent, cn } from "@/lib/utils";
 import { MetricData } from "@/lib/data";
 
 interface MetricCardProps {
@@ -16,9 +16,10 @@ interface MetricCardProps {
 
 export function MetricCard({ data, historicalData }: MetricCardProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  
-  // Get the icon component from Lucide icons
-  const IconComponent = (LucideIcons as any)[data.icon] as typeof LucideIcons;
+
+  // Correctly type the icon component: get a React component or undefined
+  // Safely extract the icon component
+  const IconComponent = (LucideIcons as unknown as Record<string, React.ElementType>)[data.icon];
 
   const formatValue = (value: number) => {
     if (data.id === "revenue" || data.id === "aov") {
@@ -38,9 +39,7 @@ export function MetricCard({ data, historicalData }: MetricCardProps) {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 {IconComponent && <IconComponent className="h-5 w-5 text-muted-foreground" />}
-                <h3 className="font-medium text-sm text-muted-foreground">
-                  {data.name}
-                </h3>
+                <h3 className="font-medium text-sm text-muted-foreground">{data.name}</h3>
               </div>
               <div>
                 <p className="text-2xl font-semibold">{formatValue(data.value)}</p>
@@ -150,12 +149,7 @@ export function MetricCard({ data, historicalData }: MetricCardProps) {
                         />
                       </linearGradient>
                     </defs>
-                    <XAxis
-                      dataKey="date"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 12 }}
-                    />
+                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
                     <YAxis
                       axisLine={false}
                       tickLine={false}
@@ -167,10 +161,7 @@ export function MetricCard({ data, historicalData }: MetricCardProps) {
                       }
                     />
                     <Tooltip
-                      formatter={(value: number) => [
-                        formatValue(value),
-                        data.name,
-                      ]}
+                      formatter={(value: number) => [formatValue(value), data.name]}
                       labelFormatter={(label) => `Date: ${label}`}
                     />
                     <Area
