@@ -9,168 +9,105 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TimeSeriesData } from "@/lib/data";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatCurrency, formatNumber } from "@/lib/utils";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 
-interface SalesChartProps {
-  data: TimeSeriesData[];
+const dummyData = [
+  { date: "2024-01", sales: 4000, visitors: 2400, orders: 240 },
+  { date: "2024-02", sales: 3000, visitors: 2210, orders: 200 },
+  { date: "2024-03", sales: 5000, visitors: 2290, orders: 278 },
+  { date: "2024-04", sales: 4780, visitors: 2000, orders: 189 },
+  { date: "2024-05", sales: 5890, visitors: 2181, orders: 239 },
+  { date: "2024-06", sales: 4390, visitors: 2500, orders: 349 },
+  { date: "2024-07", sales: 4490, visitors: 2100, orders: 400 },
+];
+
+function formatCurrency(val: number) {
+  return `$${val.toLocaleString()}`;
 }
 
-export function SalesChart({ data }: SalesChartProps) {
-  const [activeKey, setActiveKey] = useState<string>("sales");
+function formatNumber(val: number) {
+  return val.toLocaleString();
+}
 
-  const formatYAxisTick = (value: number) => {
-    if (activeKey === "sales") {
-      return formatCurrency(value);
-    }
-    return formatNumber(value);
-  };
+export function SalesChart() {
+  const [activeKey, setActiveKey] = useState("sales");
+
+  const formatYAxisTick = (value: number) =>
+    activeKey === "sales" ? formatCurrency(value) : formatNumber(value);
 
   const formatTooltipValue = (value: number, name: string) => {
-    if (name === "sales") {
-      return [formatCurrency(value), "Sales"];
-    } else if (name === "visitors") {
-      return [formatNumber(value), "Visitors"];
-    } else {
-      return [formatNumber(value), "Orders"];
-    }
+    if (name === "sales") return [formatCurrency(value), "Sales"];
+    if (name === "visitors") return [formatNumber(value), "Visitors"];
+    return [formatNumber(value), "Orders"];
   };
 
   return (
     <Card className="col-span-3">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <div className="space-y-1">
-          <CardTitle>Performance Overview</CardTitle>
-          <CardDescription>
-            Track sales, visitors, and orders over time
-          </CardDescription>
-        </div>
+      <CardHeader>
+        <CardTitle>Performance Overview</CardTitle>
+        <CardDescription>Track sales, visitors, and orders over time</CardDescription>
       </CardHeader>
-      <CardContent className="pt-2">
-        <div className="h-[350px]">
-          <Tabs defaultValue="sales" className="w-full" onValueChange={setActiveKey}>
-            <TabsList className="grid w-[260px] grid-cols-3">
-              <TabsTrigger value="sales">Sales</TabsTrigger>
-              <TabsTrigger value="visitors">Visitors</TabsTrigger>
-              <TabsTrigger value="orders">Orders</TabsTrigger>
-            </TabsList>
-            <TabsContent value="sales" className="mt-0 h-full">
+      <CardContent>
+        <Tabs defaultValue="sales" className="w-full" onValueChange={setActiveKey}>
+          <TabsList className="grid w-[260px] grid-cols-3">
+            <TabsTrigger value="sales">Sales</TabsTrigger>
+            <TabsTrigger value="visitors">Visitors</TabsTrigger>
+            <TabsTrigger value="orders">Orders</TabsTrigger>
+          </TabsList>
+
+          {["sales", "visitors", "orders"].map((key) => (
+            <TabsContent key={key} value={key} className="mt-4 h-[350px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+                <AreaChart data={dummyData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0} />
+                    <linearGradient id={`color${key}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                   <XAxis dataKey="date" axisLine={false} tickLine={false} />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tickFormatter={formatYAxisTick} 
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tickFormatter={formatYAxisTick}
                   />
-                  <Tooltip 
+                  <Tooltip
                     formatter={formatTooltipValue}
-                    contentStyle={{ 
-                      background: 'var(--popover)',
-                      border: '1px solid var(--border)',
-                      borderRadius: 'var(--radius)',
-                      color: 'var(--popover-foreground)'
+                    contentStyle={{
+                      background: "white",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "0.5rem",
+                      color: "#000",
                     }}
                   />
-                  <Area 
-                    type="monotone" 
-                    dataKey="sales" 
-                    stroke="var(--chart-1)" 
-                    fillOpacity={1} 
-                    fill="url(#colorSales)" 
+                  <Area
+                    type="monotone"
+                    dataKey={key}
+                    stroke="#3b82f6"
+                    fillOpacity={1}
+                    fill={`url(#color${key})`}
                     strokeWidth={2}
                     animationDuration={1000}
                   />
                 </AreaChart>
               </ResponsiveContainer>
             </TabsContent>
-            <TabsContent value="visitors" className="mt-0 h-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
-                  <defs>
-                    <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--chart-2)" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="var(--chart-2)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                  <XAxis dataKey="date" axisLine={false} tickLine={false} />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tickFormatter={formatYAxisTick} 
-                  />
-                  <Tooltip 
-                    formatter={formatTooltipValue}
-                    contentStyle={{ 
-                      background: 'var(--popover)',
-                      border: '1px solid var(--border)',
-                      borderRadius: 'var(--radius)',
-                      color: 'var(--popover-foreground)'
-                    }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="visitors" 
-                    stroke="var(--chart-2)" 
-                    fillOpacity={1} 
-                    fill="url(#colorVisitors)" 
-                    strokeWidth={2}
-                    animationDuration={1000}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </TabsContent>
-            <TabsContent value="orders" className="mt-0 h-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
-                  <defs>
-                    <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--chart-3)" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="var(--chart-3)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                  <XAxis dataKey="date" axisLine={false} tickLine={false} />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tickFormatter={formatYAxisTick} 
-                  />
-                  <Tooltip 
-                    formatter={formatTooltipValue}
-                    contentStyle={{ 
-                      background: 'var(--popover)',
-                      border: '1px solid var(--border)',
-                      borderRadius: 'var(--radius)',
-                      color: 'var(--popover-foreground)'
-                    }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="orders" 
-                    stroke="var(--chart-3)" 
-                    fillOpacity={1} 
-                    fill="url(#colorOrders)" 
-                    strokeWidth={2}
-                    animationDuration={1000}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </TabsContent>
-          </Tabs>
-        </div>
+          ))}
+        </Tabs>
       </CardContent>
     </Card>
   );
