@@ -102,7 +102,7 @@ export default function Home() {
         <div
           className={`lg:col-span-3 ${isLoading ? 'opacity-60 animate-pulse' : 'opacity-100'} transition-opacity duration-500`}
         >
-          <SalesChart data={salesData} />
+          <SalesChart />
         </div>
         <div
           className={`${isLoading ? 'opacity-60 animate-pulse' : 'opacity-100'} transition-opacity duration-500`}
