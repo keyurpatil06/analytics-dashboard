@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { DateRange } from 'react-day-picker';
-import { 
-  getMetricsData, 
-  getSalesData, 
-  getCustomerSegmentData, 
+import {
+  getMetricsData,
+  getSalesData,
+  getCustomerSegmentData,
   getSalesByChannelData,
   getTopProductsData,
   filterDataByDateRange
@@ -26,13 +26,13 @@ export default function Home() {
   const [customerData, setCustomerData] = useState(getCustomerSegmentData());
   const [channelData, setChannelData] = useState(getSalesByChannelData());
   const [productsData, setProductsData] = useState(getTopProductsData());
-  
+
   // Generate historical data for metric cards
   const generateHistoricalData = (metric: string) => {
     const multiplier = metric === 'revenue' ? 1000 : metric === 'orders' ? 100 : metric === 'customers' ? 10 : 1;
     const min = metric === 'aov' ? 160 : 5;
     const max = metric === 'aov' ? 220 : 25;
-    
+
     return Array.from({ length: 10 }).map((_, i) => ({
       date: `Day ${i + 1}`,
       value: (getRandomData(1, min, max)[0]) * multiplier,
@@ -43,11 +43,11 @@ export default function Home() {
     if (range?.from && range?.to) {
       setIsLoading(true);
       setDateRange(range);
-      
+
       // Simulate API call with loading state
       setTimeout(() => {
         // In a real app, these would be API calls with the date range
-        const days = Math.ceil((range.to.getTime() - range.from.getTime()) / (1000 * 60 * 60 * 24));
+        const days = Math.ceil((range.to!.getTime() - range.from!.getTime()) / (1000 * 60 * 60 * 24));
         setSalesData(getSalesData(days));
         setMetrics(getMetricsData());
         setCustomerData(getCustomerSegmentData());
@@ -63,7 +63,7 @@ export default function Home() {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1000);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -73,24 +73,24 @@ export default function Home() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
-            {dateRange.from && dateRange.to 
+            {dateRange.from && dateRange.to
               ? `Analytics for ${formatDateRange(dateRange.from, dateRange.to)}`
               : 'Welcome to your analytics dashboard'}
           </p>
         </div>
-        <DateRangePicker 
-          dateRange={dateRange} 
-          onDateRangeChange={handleDateRangeChange} 
+        <DateRangePicker
+          dateRange={dateRange}
+          onDateRangeChange={handleDateRangeChange}
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {metrics.map((metric) => (
-          <div 
+          <div
             key={metric.id}
             className={`${isLoading ? 'opacity-60 animate-pulse' : 'opacity-100'} transition-opacity duration-500`}
           >
-            <MetricCard 
+            <MetricCard
               data={metric}
               historicalData={generateHistoricalData(metric.id)}
             />
@@ -99,12 +99,12 @@ export default function Home() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div 
+        <div
           className={`lg:col-span-3 ${isLoading ? 'opacity-60 animate-pulse' : 'opacity-100'} transition-opacity duration-500`}
         >
           <SalesChart data={salesData} />
         </div>
-        <div 
+        <div
           className={`${isLoading ? 'opacity-60 animate-pulse' : 'opacity-100'} transition-opacity duration-500`}
         >
           <TopProducts data={productsData} />
@@ -112,12 +112,12 @@ export default function Home() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div 
+        <div
           className={`${isLoading ? 'opacity-60 animate-pulse' : 'opacity-100'} transition-opacity duration-500`}
         >
           <CustomersChart data={customerData} />
         </div>
-        <div 
+        <div
           className={`${isLoading ? 'opacity-60 animate-pulse' : 'opacity-100'} transition-opacity duration-500`}
         >
           <SalesByChannel data={channelData} />
