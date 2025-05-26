@@ -53,14 +53,18 @@ export function DateRangePicker({
             mode="range"
             defaultMonth={dateRange?.from}
             selected={dateRange}
-            onSelect={onDateRangeChange}
+            onSelect={(range) => {
+              if (range) {
+                onDateRangeChange(range);
+              }
+            }}
             numberOfMonths={2}
           />
           <div className="flex items-center justify-between p-3 border-t border-border">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => 
+              onClick={() =>
                 onDateRangeChange({
                   from: addDays(new Date(), -7),
                   to: new Date(),
@@ -72,7 +76,7 @@ export function DateRangePicker({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => 
+              onClick={() =>
                 onDateRangeChange({
                   from: addDays(new Date(), -30),
                   to: new Date(),
@@ -84,7 +88,7 @@ export function DateRangePicker({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => 
+              onClick={() =>
                 onDateRangeChange({
                   from: addDays(new Date(), -90),
                   to: new Date(),
